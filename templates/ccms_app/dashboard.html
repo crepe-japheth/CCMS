@@ -3,12 +3,27 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block page_subtitle %}
-<p class="mt-1 text-sm text-slate-500">Overview of courier and cargo operations across all branches.</p>
+<p class="mt-1 text-sm text-slate-500">{{ page_subtitle }}</p>
 {% endblock %}
 
 {% block content %}
+<!-- Period filter -->
+<div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <p class="text-sm text-slate-500">
+        Showing <span class="font-medium text-slate-700">{{ period_label }}</span> data for charts and period stats.
+    </p>
+    <form method="get" class="flex items-center gap-2">
+        <label for="period" class="text-sm font-medium text-slate-600">Period</label>
+        <select id="period" name="period" class="form-input w-auto py-1.5" onchange="this.form.submit()">
+            {% for value, label in period_choices.items %}
+            <option value="{{ value }}" {% if period == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
 <!-- KPI Cards -->
-<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
     <div class="dashboard-card">
         <div class="flex items-start justify-between">
             <div>
@@ -19,7 +34,7 @@
                 <i class="fa-solid fa-box text-lg"></i>
             </div>
         </div>
-        <p class="mt-3 text-xs text-slate-400">All registered shipments</p>
+        <p class="mt-3 text-xs text-slate-400">{{ stats.registered_period }} registered in period</p>
     </div>
 
     <div class="dashboard-card">
@@ -38,6 +53,19 @@
     <div class="dashboard-card">
         <div class="flex items-start justify-between">
             <div>
+                <p class="text-sm font-medium text-slate-500">At Destination</p>
+                <p class="mt-1 text-3xl font-bold text-slate-800">{{ stats.arrived }}</p>
+            </div>
+            <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
+                <i class="fa-solid fa-warehouse text-lg"></i>
+            </div>
+        </div>
+        <p class="mt-3 text-xs text-slate-400">Arrived or ready for pickup</p>
+    </div>
+
+    <div class="dashboard-card">
+        <div class="flex items-start justify-between">
+            <div>
                 <p class="text-sm font-medium text-slate-500">Delivered</p>
                 <p class="mt-1 text-3xl font-bold text-slate-800">{{ stats.delivered }}</p>
             </div>
@@ -51,77 +79,155 @@
     <div class="dashboard-card">
         <div class="flex items-start justify-between">
             <div>
-                <p class="text-sm font-medium text-slate-500">Revenue</p>
-                <p class="mt-1 text-3xl font-bold text-slate-800">${{ stats.revenue }}</p>
+                <p class="text-sm font-medium text-slate-500">Period Revenue</p>
+                <p class="mt-1 text-2xl font-bold text-slate-800">${{ stats.revenue_period }}</p>
             </div>
-            <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
-                <i class="fa-solid fa-dollar-sign text-lg"></i>
+            <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
+                <i class="fa-solid fa-coins text-lg"></i>
             </div>
         </div>
-        <p class="mt-3 text-xs text-slate-400">Total transport fees</p>
+        <p class="mt-3 text-xs text-slate-400">All-time: ${{ stats.revenue_total }}</p>
+    </div>
+
+    <div class="dashboard-card">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500">Fleet</p>
+                <p class="mt-1 text-3xl font-bold text-slate-800">{{ stats.vehicles_active }}</p>
+            </div>
+            <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600">
+                <i class="fa-solid fa-truck text-lg"></i>
+            </div>
+        </div>
+        <p class="mt-3 text-xs text-slate-400">{{ stats.vehicles_in_transit }} in transit now</p>
+    </div>
+</div>
+
+<!-- Trend chart -->
+<div class="dashboard-card mb-6">
+    <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-slate-800">Last 7 Days Activity</h2>
+        <span class="text-xs text-slate-500">Registrations &amp; revenue</span>
+    </div>
+    <div class="h-72">
+        <canvas id="trendChart"></canvas>
     </div>
 </div>
 
 <!-- Charts Row -->
 <div class="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
     <div class="dashboard-card">
-        <div class="mb-4 flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-slate-800">Packages by Branch</h2>
-            <select class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600">
-                <option>This Month</option>
-                <option>Last Month</option>
-                <option>This Year</option>
-            </select>
-        </div>
+        <h2 class="mb-4 text-lg font-semibold text-slate-800">Packages Sent by Branch</h2>
         <div class="h-64">
-            <canvas id="branchChart"></canvas>
+            <canvas id="branchSentChart"></canvas>
         </div>
     </div>
 
     <div class="dashboard-card">
-        <div class="mb-4 flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-slate-800">Shipment Status</h2>
-        </div>
+        <h2 class="mb-4 text-lg font-semibold text-slate-800">Packages Received by Branch</h2>
         <div class="h-64">
-            <canvas id="statusChart"></canvas>
+            <canvas id="branchReceivedChart"></canvas>
         </div>
     </div>
 </div>
 
+<div class="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <div class="dashboard-card">
+        <h2 class="mb-4 text-lg font-semibold text-slate-800">Shipment Status Breakdown</h2>
+        <div class="h-72">
+            <canvas id="statusChart"></canvas>
+        </div>
+    </div>
+
+    {% if user.is_admin_manager and branch_summary %}
+    <div class="dashboard-card">
+        <h2 class="mb-4 text-lg font-semibold text-slate-800">Branch Activity</h2>
+        <div class="overflow-x-auto">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Branch</th>
+                        <th>Sent</th>
+                        <th>Received</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in branch_summary %}
+                    <tr>
+                        <td>
+                            <span class="font-medium">{{ row.code }}</span>
+                            <span class="block text-xs text-slate-500">{{ row.name }}</span>
+                        </td>
+                        <td>{{ row.sent }}</td>
+                        <td>{{ row.received }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="dashboard-card">
+        <h2 class="mb-4 text-lg font-semibold text-slate-800">Quick Actions</h2>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <a href="{% url 'ccms_app:package_register' %}" class="flex items-center gap-3 rounded-lg border border-slate-200 p-4 hover:border-brand hover:bg-blue-50">
+                <i class="fa-solid fa-plus-circle text-xl text-brand"></i>
+                <span class="text-sm font-medium text-slate-700">Register Package</span>
+            </a>
+            <a href="{% url 'ccms_app:scan_arrival' %}" class="flex items-center gap-3 rounded-lg border border-slate-200 p-4 hover:border-brand hover:bg-blue-50">
+                <i class="fa-solid fa-qrcode text-xl text-brand"></i>
+                <span class="text-sm font-medium text-slate-700">Scan Arrival</span>
+            </a>
+            <a href="{% url 'ccms_app:confirm_delivery_lookup' %}" class="flex items-center gap-3 rounded-lg border border-slate-200 p-4 hover:border-brand hover:bg-blue-50">
+                <i class="fa-solid fa-hand-holding-box text-xl text-brand"></i>
+                <span class="text-sm font-medium text-slate-700">Confirm Delivery</span>
+            </a>
+            <a href="{% url 'ccms_app:package_list' %}" class="flex items-center gap-3 rounded-lg border border-slate-200 p-4 hover:border-brand hover:bg-blue-50">
+                <i class="fa-solid fa-box text-xl text-brand"></i>
+                <span class="text-sm font-medium text-slate-700">View Packages</span>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
 <!-- Bottom Row -->
 <div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
-    <!-- Recent Shipments -->
     <div class="dashboard-card xl:col-span-2">
         <div class="mb-4 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-slate-800">Recent Shipments</h2>
-            <a href="#" class="text-sm font-medium text-brand hover:text-brand-dark">View all</a>
+            <a href="{% url 'ccms_app:package_list' %}" class="text-sm font-medium text-brand hover:text-brand-dark">View all</a>
         </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
+            <table class="data-table">
                 <thead>
-                    <tr class="border-b border-slate-200 text-slate-500">
-                        <th class="pb-3 pr-4 font-medium">Tracking #</th>
-                        <th class="pb-3 pr-4 font-medium">Origin</th>
-                        <th class="pb-3 pr-4 font-medium">Destination</th>
-                        <th class="pb-3 pr-4 font-medium">Status</th>
-                        <th class="pb-3 font-medium">Fee</th>
+                    <tr>
+                        <th>Tracking #</th>
+                        <th>Origin</th>
+                        <th>Destination</th>
+                        <th>Status</th>
+                        <th>Fee</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
-                    {% for shipment in recent_shipments %}
-                    <tr class="text-slate-700">
-                        <td class="py-3 pr-4 font-mono text-xs">{{ shipment.tracking_number }}</td>
-                        <td class="py-3 pr-4">{{ shipment.origin }}</td>
-                        <td class="py-3 pr-4">{{ shipment.destination }}</td>
-                        <td class="py-3 pr-4">
-                            <span class="status-badge status-{{ shipment.status_class }}">{{ shipment.status }}</span>
+                <tbody>
+                    {% for package in recent_shipments %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'ccms_app:package_detail' package.pk %}" class="font-mono text-xs font-medium text-brand hover:underline">
+                                {{ package.tracking_number }}
+                            </a>
                         </td>
-                        <td class="py-3">${{ shipment.fee }}</td>
+                        <td>{{ package.origin_branch.code }}</td>
+                        <td>{{ package.destination_branch.code }}</td>
+                        <td>
+                            <span class="status-badge status-{{ package.status_css_class }}">{{ package.status_label }}</span>
+                        </td>
+                        <td>${{ package.transport_fee }}</td>
                     </tr>
                     {% empty %}
                     <tr>
                         <td colspan="5" class="py-8 text-center text-slate-400">
-                            No shipments yet. Data will appear once packages are registered.
+                            No shipments yet. Register a package to see activity here.
                         </td>
                     </tr>
                     {% endfor %}
@@ -130,7 +236,6 @@
         </div>
     </div>
 
-    <!-- Quick Stats -->
     <div class="dashboard-card bg-gradient-to-br from-brand to-brand-dark text-white">
         <h2 class="mb-6 text-lg font-semibold">Today's Activity</h2>
         <div class="space-y-6">
@@ -162,9 +267,15 @@
                 </div>
             </div>
         </div>
-        <div class="mt-6 border-t border-white/20 pt-4">
-            <p class="text-sm text-blue-100">Active Branches</p>
-            <p class="text-2xl font-bold">{{ stats.active_branches }}</p>
+        <div class="mt-6 grid grid-cols-2 gap-4 border-t border-white/20 pt-4">
+            <div>
+                <p class="text-sm text-blue-100">Active Branches</p>
+                <p class="text-2xl font-bold">{{ stats.active_branches }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-blue-100">Daily Target</p>
+                <p class="text-2xl font-bold">{{ stats.daily_target }}</p>
+            </div>
         </div>
     </div>
 </div>
@@ -173,51 +284,99 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-    const branchLabels = {{ branch_chart.labels|safe }};
-    const branchData = {{ branch_chart.data|safe }};
-    const statusLabels = {{ status_chart.labels|safe }};
-    const statusData = {{ status_chart.data|safe }};
+    const chartDefaults = {
+        responsive: true,
+        maintainAspectRatio: false,
+    };
 
-    new Chart(document.getElementById('branchChart'), {
+    const trendLabels = {{ trend_chart.labels|safe }};
+    const trendPackages = {{ trend_chart.packages|safe }};
+    const trendRevenue = {{ trend_chart.revenue|safe }};
+
+    new Chart(document.getElementById('trendChart'), {
+        type: 'bar',
+        data: {
+            labels: trendLabels,
+            datasets: [
+                {
+                    label: 'Packages',
+                    data: trendPackages,
+                    backgroundColor: '#60a5fa',
+                    borderRadius: 6,
+                    yAxisID: 'y',
+                },
+                {
+                    label: 'Revenue ($)',
+                    data: trendRevenue,
+                    type: 'line',
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.3,
+                    yAxisID: 'y1',
+                },
+            ],
+        },
+        options: {
+            ...chartDefaults,
+            interaction: { mode: 'index', intersect: false },
+            plugins: { legend: { position: 'top' } },
+            scales: {
+                y: { beginAtZero: true, position: 'left', grid: { display: false } },
+                y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false } },
+                x: { grid: { display: false } },
+            },
+        },
+    });
+
+    const branchLabels = {{ branch_chart.labels|safe }};
+    const branchSent = {{ branch_chart.sent|safe }};
+    const receivedLabels = {{ branch_chart.received_labels|safe }};
+    const branchReceived = {{ branch_chart.received|safe }};
+
+    const barOptions = {
+        ...chartDefaults,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { grid: { display: false }, beginAtZero: true },
+            y: { grid: { display: false } },
+        },
+    };
+
+    new Chart(document.getElementById('branchSentChart'), {
         type: 'bar',
         data: {
             labels: branchLabels,
-            datasets: [{
-                label: 'Packages Sent',
-                data: branchData,
-                backgroundColor: '#60a5fa',
-                borderRadius: 6,
-            }],
+            datasets: [{ label: 'Sent', data: branchSent, backgroundColor: '#60a5fa', borderRadius: 6 }],
         },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { grid: { display: false }, beginAtZero: true },
-                y: { grid: { display: false } },
-            },
+        options: barOptions,
+    });
+
+    new Chart(document.getElementById('branchReceivedChart'), {
+        type: 'bar',
+        data: {
+            labels: receivedLabels,
+            datasets: [{ label: 'Received', data: branchReceived, backgroundColor: '#8b5cf6', borderRadius: 6 }],
         },
+        options: barOptions,
     });
 
     new Chart(document.getElementById('statusChart'), {
         type: 'doughnut',
         data: {
-            labels: statusLabels,
+            labels: {{ status_chart.labels|safe }},
             datasets: [{
-                data: statusData,
-                backgroundColor: ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444'],
+                data: {{ status_chart.data|safe }},
+                backgroundColor: {{ status_chart.colors|safe }},
                 borderWidth: 0,
             }],
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
+            ...chartDefaults,
             plugins: {
-                legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } },
+                legend: { position: 'right', labels: { boxWidth: 12, padding: 10 } },
             },
-            cutout: '65%',
+            cutout: '60%',
         },
     });
 </script>

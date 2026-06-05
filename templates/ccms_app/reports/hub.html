@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block page_header %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-800">Reports</h1>
+    <p class="mt-1 text-sm text-slate-500">Operational, financial, and user activity reports with PDF and Excel export.</p>
+</div>
+{% endblock %}
+
+{% block content %}
+{% for section in sections %}
+<div class="mb-8">
+    <h2 class="mb-4 text-lg font-semibold text-slate-800">{{ section.label }}</h2>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {% for report in section.reports %}
+        <a href="{% url 'ccms_app:report_view' report.slug %}"
+           class="dashboard-card block transition hover:border-brand hover:shadow-md">
+            <div class="mb-3 flex items-start justify-between">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-brand">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+                <span class="text-xs font-medium uppercase tracking-wide text-slate-400">{{ section.key }}</span>
+            </div>
+            <h3 class="font-semibold text-slate-800">{{ report.title }}</h3>
+            <p class="mt-1 text-sm text-slate-500">{{ report.description }}</p>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

@@ -92,7 +92,8 @@
         <p class="mb-2 mt-6 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Reports</p>
         <ul class="space-y-1">
             <li>
-                <a href="#" class="sidebar-link" title="Coming in Phase 8">
+                <a href="{% url 'ccms_app:reports_hub' %}"
+                   class="sidebar-link {% if active_nav == 'reports' %}active{% endif %}">
                     <i class="fa-solid fa-chart-pie w-5 text-center"></i>
                     <span>Reports</span>
                 </a>
