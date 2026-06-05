@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}{{ package.tracking_number }}{% endblock %}
+
+{% block page_header %}
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800 font-mono">{{ package.tracking_number }}</h1>
+        <p class="mt-1 text-sm text-slate-500">
+            {{ package.origin_branch.name }} &rarr; {{ package.destination_branch.name }}
+        </p>
+    </div>
+    <div class="flex gap-2">
+        <a href="{% url 'ccms_app:package_qr' package.pk %}" class="btn-primary">
+            <i class="fa-solid fa-qrcode"></i> Print QR Label
+        </a>
+        <a href="{% url 'ccms_app:package_list' %}" class="btn-secondary">Back to list</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <span class="status-badge status-{{ package.status_css_class }} text-sm">{{ package.status_label }}</span>
+</div>
+
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div class="dashboard-card lg:col-span-2">
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div>
+                <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Sender</h3>
+                <dl class="space-y-2 text-sm">
+                    <div><dt class="text-slate-500">Name</dt><dd class="font-medium">{{ package.sender_full_name }}</dd></div>
+                    <div><dt class="text-slate-500">ID</dt><dd>{{ package.sender_id_number }}</dd></div>
+                    <div><dt class="text-slate-500">Phone</dt><dd>{{ package.sender_phone }}</dd></div>
+                </dl>
+            </div>
+            <div>
+                <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Receiver</h3>
+                <dl class="space-y-2 text-sm">
+                    <div><dt class="text-slate-500">Name</dt><dd class="font-medium">{{ package.receiver_full_name }}</dd></div>
+                    <div><dt class="text-slate-500">ID</dt><dd>{{ package.receiver_id_number }}</dd></div>
+                    <div><dt class="text-slate-500">Phone</dt><dd>{{ package.receiver_phone }}</dd></div>
+                </dl>
+            </div>
+        </div>
+
+        <hr class="my-6 border-slate-100">
+
+        <div class="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
+            <div><p class="text-slate-500">Type</p><p class="font-medium">{{ package.get_package_type_display }}</p></div>
+            <div><p class="text-slate-500">Quantity</p><p class="font-medium">{{ package.quantity }}</p></div>
+            <div><p class="text-slate-500">Weight</p><p class="font-medium">{{ package.weight }} kg</p></div>
+            <div><p class="text-slate-500">Transport Fee</p><p class="font-medium">${{ package.transport_fee }}</p></div>
+            <div><p class="text-slate-500">Vehicle</p><p class="font-medium">{% if package.assigned_vehicle %}{{ package.assigned_vehicle.plate_number }}{% else %}—{% endif %}</p></div>
+            <div><p class="text-slate-500">Registered By</p><p class="font-medium">{{ package.registered_by.full_name }}</p></div>
+            <div><p class="text-slate-500">Registered</p><p class="font-medium">{{ package.registered_at|date:"M d, Y H:i" }}</p></div>
+        </div>
+
+        {% if package.description %}
+        <div class="mt-4 text-sm">
+            <p class="text-slate-500">Description</p>
+            <p>{{ package.description }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="dashboard-card">
+        <h3 class="mb-4 text-lg font-semibold text-slate-800">Status History</h3>
+        <ol class="space-y-4">
+            {% for entry in history %}
+            <li class="border-l-2 border-brand pl-4">
+                <p class="text-sm font-medium text-slate-800">{{ entry.get_status_display }}</p>
+                <p class="text-xs text-slate-500">{{ entry.changed_at|date:"M d, Y H:i" }}</p>
+                {% if entry.changed_by %}<p class="text-xs text-slate-400">by {{ entry.changed_by.full_name }}</p>{% endif %}
+            </li>
+            {% empty %}
+            <li class="text-sm text-slate-400">No history yet.</li>
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+{% endblock %}

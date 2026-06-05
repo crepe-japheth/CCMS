@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Vehicles{% endblock %}
+
+{% block page_header %}
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Vehicles</h1>
+        <p class="mt-1 text-sm text-slate-500">Manage transportation fleet and drivers.</p>
+    </div>
+    <a href="{% url 'ccms_app:vehicle_create' %}" class="btn-primary">
+        <i class="fa-solid fa-plus"></i> Register Vehicle
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-card mb-4">
+    <form method="get" class="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div class="flex-1">
+            <label class="form-label">Search</label>
+            <input type="search" name="q" value="{{ query }}" placeholder="Plate, driver, type..."
+                   class="form-input">
+        </div>
+        <div class="w-full sm:w-44">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-input">
+                <option value="">All</option>
+                <option value="available" {% if status_filter == 'available' %}selected{% endif %}>Available</option>
+                <option value="in_transit" {% if status_filter == 'in_transit' %}selected{% endif %}>In Transit</option>
+                <option value="maintenance" {% if status_filter == 'maintenance' %}selected{% endif %}>Maintenance</option>
+                <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+            </select>
+        </div>
+        <button type="submit" class="btn-secondary">Filter</button>
+    </form>
+</div>
+
+<div class="dashboard-card overflow-x-auto">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Plate Number</th>
+                <th>Type</th>
+                <th>Driver</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th class="text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vehicle in vehicles %}
+            <tr>
+                <td class="font-medium">{{ vehicle.plate_number }}</td>
+                <td>{{ vehicle.vehicle_type }}</td>
+                <td>{{ vehicle.driver_name }}</td>
+                <td>{{ vehicle.driver_phone }}</td>
+                <td><span class="status-badge status-registered">{{ vehicle.get_status_display }}</span></td>
+                <td class="text-right">
+                    <div class="flex items-center justify-end gap-2">
+                        <a href="{% url 'ccms_app:vehicle_detail' vehicle.pk %}" class="btn-icon" title="History">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </a>
+                        <a href="{% url 'ccms_app:vehicle_edit' vehicle.pk %}" class="btn-icon" title="Edit">
+                            <i class="fa-solid fa-pen"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="py-8 text-center text-slate-400">No vehicles found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

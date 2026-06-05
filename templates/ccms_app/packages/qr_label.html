@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Label — {{ package.tracking_number }}</title>
+    <link rel="stylesheet" href="{% static 'css/print.css' %}">
+</head>
+<body>
+    <div class="no-print toolbar">
+        <a href="{% url 'ccms_app:package_detail' package.pk %}" class="btn">&larr; Back to package</a>
+        <button onclick="window.print()" class="btn btn-primary">Print Label</button>
+    </div>
+
+    <div class="label-sheet">
+        <div class="label">
+            <div class="label-header">
+                <span class="brand">CCMS</span>
+                <span class="subtitle">Courier & Cargo Management</span>
+            </div>
+
+            <div class="qr-wrap">
+                <img src="{% url 'ccms_app:package_qr_image' package.pk %}" alt="QR Code for {{ package.tracking_number }}" width="180" height="180">
+            </div>
+
+            <p class="tracking">{{ package.tracking_number }}</p>
+
+            <div class="route">
+                <div>
+                    <span class="label-tag">From</span>
+                    <strong>{{ package.origin_branch.code }}</strong>
+                    <small>{{ package.origin_branch.name }}</small>
+                </div>
+                <div class="arrow">→</div>
+                <div>
+                    <span class="label-tag">To</span>
+                    <strong>{{ package.destination_branch.code }}</strong>
+                    <small>{{ package.destination_branch.name }}</small>
+                </div>
+            </div>
+
+            <div class="parties">
+                <div>
+                    <span class="label-tag">Sender</span>
+                    {{ package.sender_full_name }} · {{ package.sender_phone }}
+                </div>
+                <div>
+                    <span class="label-tag">Receiver</span>
+                    {{ package.receiver_full_name }} · {{ package.receiver_phone }}
+                </div>
+            </div>
+
+            <div class="meta">
+                <span>{{ package.get_package_type_display }}</span>
+                <span>{{ package.weight }} kg</span>
+                <span>Qty: {{ package.quantity }}</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

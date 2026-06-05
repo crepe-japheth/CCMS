@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Branches{% endblock %}
+
+{% block page_header %}
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Branches</h1>
+        <p class="mt-1 text-sm text-slate-500">Manage company branches and stations.</p>
+    </div>
+    <a href="{% url 'ccms_app:branch_create' %}" class="btn-primary">
+        <i class="fa-solid fa-plus"></i> Add Branch
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-card mb-4">
+    <form method="get" class="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div class="flex-1">
+            <label class="form-label">Search</label>
+            <input type="search" name="q" value="{{ query }}" placeholder="Name, code, location..."
+                   class="form-input">
+        </div>
+        <div class="w-full sm:w-40">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-input">
+                <option value="">All</option>
+                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+            </select>
+        </div>
+        <button type="submit" class="btn-secondary">Filter</button>
+    </form>
+</div>
+
+<div class="dashboard-card overflow-x-auto">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Contact</th>
+                <th>Status</th>
+                <th class="text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for branch in branches %}
+            <tr>
+                <td class="font-mono text-sm">{{ branch.code }}</td>
+                <td>{{ branch.name }}</td>
+                <td>{{ branch.location }}</td>
+                <td>{{ branch.contact_number }}</td>
+                <td>
+                    {% if branch.is_active %}
+                    <span class="status-badge status-delivered">Active</span>
+                    {% else %}
+                    <span class="status-badge status-cancelled">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="text-right">
+                    <div class="flex items-center justify-end gap-2">
+                        <a href="{% url 'ccms_app:branch_edit' branch.pk %}" class="btn-icon" title="Edit">
+                            <i class="fa-solid fa-pen"></i>
+                        </a>
+                        <form method="post" action="{% url 'ccms_app:branch_toggle_status' branch.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-icon" title="{% if branch.is_active %}Deactivate{% else %}Activate{% endif %}">
+                                <i class="fa-solid fa-{% if branch.is_active %}ban{% else %}check{% endif %}"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="py-8 text-center text-slate-400">No branches found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

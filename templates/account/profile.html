@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block page_subtitle %}
+<p class="mt-1 text-sm text-slate-500">Your account details and assigned branch.</p>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl">
+    <div class="dashboard-card">
+        <div class="mb-6 flex items-center gap-4">
+            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-brand text-2xl font-bold text-white">
+                {{ user.get_initials }}
+            </div>
+            <div>
+                <h2 class="text-xl font-bold text-slate-800">{{ user.full_name }}</h2>
+                <p class="text-sm text-slate-500">{{ user.role_label }}</p>
+            </div>
+        </div>
+
+        <dl class="divide-y divide-slate-100">
+            <div class="flex py-3">
+                <dt class="w-40 text-sm font-medium text-slate-500">Username</dt>
+                <dd class="text-sm text-slate-800">{{ user.username }}</dd>
+            </div>
+            <div class="flex py-3">
+                <dt class="w-40 text-sm font-medium text-slate-500">Email</dt>
+                <dd class="text-sm text-slate-800">{{ user.email|default:"—" }}</dd>
+            </div>
+            <div class="flex py-3">
+                <dt class="w-40 text-sm font-medium text-slate-500">Phone</dt>
+                <dd class="text-sm text-slate-800">{{ user.phone_number|default:"—" }}</dd>
+            </div>
+            <div class="flex py-3">
+                <dt class="w-40 text-sm font-medium text-slate-500">Assigned Branch</dt>
+                <dd class="text-sm text-slate-800">
+                    {% if user.branch %}
+                    {{ user.branch.name }} ({{ user.branch.code }})
+                    {% else %}
+                    —
+                    {% endif %}
+                </dd>
+            </div>
+            <div class="flex py-3">
+                <dt class="w-40 text-sm font-medium text-slate-500">Status</dt>
+                <dd class="text-sm">
+                    {% if user.is_account_active %}
+                    <span class="status-badge status-delivered">Active</span>
+                    {% else %}
+                    <span class="status-badge status-in-transit">Inactive</span>
+                    {% endif %}
+                </dd>
+            </div>
+            <div class="flex py-3">
+                <dt class="w-40 text-sm font-medium text-slate-500">Last Login</dt>
+                <dd class="text-sm text-slate-800">{{ user.last_login|date:"M d, Y H:i"|default:"—" }}</dd>
+            </div>
+        </dl>
+    </div>
+</div>
+{% endblock %}

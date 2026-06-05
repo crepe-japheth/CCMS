@@ -1,0 +1,57 @@
+<header class="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 shadow-sm md:px-6">
+    <div class="flex items-center gap-4">
+        <button id="sidebar-toggle" type="button"
+                class="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
+                aria-label="Toggle sidebar">
+            <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+
+        <div class="relative hidden sm:block">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="search" placeholder="Search packages, tracking #..."
+                   class="w-64 rounded-full border border-slate-200 bg-slate-50 py-2 pl-10 pr-4 text-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand md:w-80">
+        </div>
+    </div>
+
+    <div class="flex items-center gap-2 md:gap-4">
+        <nav class="hidden items-center gap-4 text-sm text-slate-600 md:flex">
+            <a href="#" class="hover:text-brand">Help</a>
+            <a href="#" class="hover:text-brand">Support</a>
+        </nav>
+
+        <button type="button" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100" title="Notifications">
+            <i class="fa-regular fa-bell text-lg"></i>
+        </button>
+
+        <div class="relative" id="user-menu-wrapper">
+            <button type="button" id="user-menu-toggle"
+                    class="flex items-center gap-3 rounded-lg border-l border-slate-200 pl-3 hover:bg-slate-50 md:pl-4">
+                <div class="hidden text-right sm:block">
+                    <p class="text-sm font-medium text-slate-800">{{ user.full_name }}</p>
+                    <p class="text-xs text-slate-500">{{ user.role_label }}</p>
+                </div>
+                <div class="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-sm font-semibold text-white">
+                    {{ user.get_initials }}
+                </div>
+            </button>
+
+            <div id="user-menu-dropdown"
+                 class="absolute right-0 mt-2 hidden w-48 rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+                <a href="{% url 'account:profile' %}"
+                   class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                    <i class="fa-solid fa-user w-4 text-slate-400"></i>
+                    My Profile
+                </a>
+                <form method="post" action="{% url 'account:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                        <i class="fa-solid fa-right-from-bracket w-4"></i>
+                        Sign Out
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</header>
+

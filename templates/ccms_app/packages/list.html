@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Packages{% endblock %}
+
+{% block page_header %}
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Packages</h1>
+        <p class="mt-1 text-sm text-slate-500">View and manage registered shipments.</p>
+    </div>
+    <a href="{% url 'ccms_app:package_register' %}" class="btn-primary">
+        <i class="fa-solid fa-plus"></i> Register Package
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-card mb-4">
+    <form method="get" class="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div class="flex-1">
+            <label class="form-label">Search</label>
+            <input type="search" name="q" value="{{ query }}" placeholder="Tracking #, sender, receiver..."
+                   class="form-input">
+        </div>
+        <div class="w-full sm:w-48">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-input">
+                <option value="">All statuses</option>
+                <option value="registered" {% if status_filter == 'registered' %}selected{% endif %}>Registered</option>
+                <option value="ready_for_dispatch" {% if status_filter == 'ready_for_dispatch' %}selected{% endif %}>Ready for Dispatch</option>
+                <option value="in_transit" {% if status_filter == 'in_transit' %}selected{% endif %}>In Transit</option>
+                <option value="arrived" {% if status_filter == 'arrived' %}selected{% endif %}>Arrived</option>
+                <option value="ready_for_pickup" {% if status_filter == 'ready_for_pickup' %}selected{% endif %}>Ready for Pickup</option>
+                <option value="delivered" {% if status_filter == 'delivered' %}selected{% endif %}>Delivered</option>
+                <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+        </div>
+        <button type="submit" class="btn-secondary">Filter</button>
+    </form>
+</div>
+
+<div class="dashboard-card overflow-x-auto">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Tracking #</th>
+                <th>Sender</th>
+                <th>Receiver</th>
+                <th>Route</th>
+                <th>Fee</th>
+                <th>Status</th>
+                <th class="text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for package in packages %}
+            <tr>
+                <td>
+                    <a href="{% url 'ccms_app:package_detail' package.pk %}" class="font-mono text-xs font-medium text-brand hover:underline">
+                        {{ package.tracking_number }}
+                    </a>
+                </td>
+                <td>{{ package.sender_full_name }}</td>
+                <td>{{ package.receiver_full_name }}</td>
+                <td>{{ package.origin_branch.code }} &rarr; {{ package.destination_branch.code }}</td>
+                <td>${{ package.transport_fee }}</td>
+                <td><span class="status-badge status-{{ package.status_css_class }}">{{ package.status_label }}</span></td>
+                <td class="text-right">
+                    <div class="flex items-center justify-end gap-2">
+                        <a href="{% url 'ccms_app:package_detail' package.pk %}" class="btn-icon" title="View">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+                        <a href="{% url 'ccms_app:package_qr' package.pk %}" class="btn-icon" title="Print QR">
+                            <i class="fa-solid fa-qrcode"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="py-8 text-center text-slate-400">No packages found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

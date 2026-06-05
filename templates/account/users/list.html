@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Users{% endblock %}
+
+{% block page_header %}
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Users</h1>
+        <p class="mt-1 text-sm text-slate-500">Manage system users and role assignments.</p>
+    </div>
+    <a href="{% url 'account:user_create' %}" class="btn-primary">
+        <i class="fa-solid fa-plus"></i> Add User
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-card mb-4">
+    <form method="get" class="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div class="flex-1">
+            <label class="form-label">Search</label>
+            <input type="search" name="q" value="{{ query }}" placeholder="Name, username, email..."
+                   class="form-input">
+        </div>
+        <div class="w-full sm:w-44">
+            <label class="form-label">Role</label>
+            <select name="role" class="form-input">
+                <option value="">All roles</option>
+                <option value="admin_manager" {% if role_filter == 'admin_manager' %}selected{% endif %}>Admin / Manager</option>
+                <option value="branch_officer" {% if role_filter == 'branch_officer' %}selected{% endif %}>Branch Officer</option>
+            </select>
+        </div>
+        <div class="w-full sm:w-36">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-input">
+                <option value="">All</option>
+                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+            </select>
+        </div>
+        <button type="submit" class="btn-secondary">Filter</button>
+    </form>
+</div>
+
+<div class="dashboard-card overflow-x-auto">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Branch</th>
+                <th>Status</th>
+                <th class="text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td class="font-medium">{{ u.full_name }}</td>
+                <td>{{ u.username }}</td>
+                <td>{{ u.role_label }}</td>
+                <td>{% if u.branch %}{{ u.branch.code }}{% else %}—{% endif %}</td>
+                <td>
+                    {% if u.is_account_active %}
+                    <span class="status-badge status-delivered">Active</span>
+                    {% else %}
+                    <span class="status-badge status-cancelled">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="text-right">
+                    <div class="flex items-center justify-end gap-2">
+                        <a href="{% url 'account:user_edit' u.pk %}" class="btn-icon" title="Edit">
+                            <i class="fa-solid fa-pen"></i>
+                        </a>
+                        {% if u != user %}
+                        <form method="post" action="{% url 'account:user_toggle_status' u.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-icon" title="{% if u.is_account_active %}Deactivate{% else %}Activate{% endif %}">
+                                <i class="fa-solid fa-{% if u.is_account_active %}ban{% else %}check{% endif %}"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="py-8 text-center text-slate-400">No users found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

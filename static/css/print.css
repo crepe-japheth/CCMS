@@ -1,0 +1,156 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.no-print.toolbar {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    font-size: 0.875rem;
+    text-decoration: none;
+    color: #475569;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: #fff;
+}
+
+.label-sheet {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.label {
+    width: 400px;
+    border: 2px dashed #cbd5e1;
+    border-radius: 0.75rem;
+    background: #fff;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.label-header {
+    margin-bottom: 1rem;
+}
+
+.label-header .brand {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1e2a4a;
+    letter-spacing: 0.05em;
+}
+
+.label-header .subtitle {
+    font-size: 0.7rem;
+    color: #64748b;
+}
+
+.qr-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 0.5rem 0 1rem;
+}
+
+.tracking {
+    font-family: ui-monospace, monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e2a4a;
+    margin-bottom: 1rem;
+}
+
+.route {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 0.5rem;
+    text-align: left;
+    font-size: 0.8rem;
+}
+
+.route .arrow {
+    font-size: 1.25rem;
+    color: #3b82f6;
+}
+
+.label-tag {
+    display: block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    margin-bottom: 0.125rem;
+}
+
+.route strong {
+    display: block;
+    font-size: 0.95rem;
+}
+
+.route small {
+    color: #64748b;
+}
+
+.parties {
+    text-align: left;
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+    display: grid;
+    gap: 0.5rem;
+}
+
+.meta {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: #64748b;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 0.75rem;
+}
+
+@media print {
+    body {
+        background: #fff;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .label-sheet {
+        padding: 0;
+    }
+
+    .label {
+        border: 1px solid #000;
+    }
+}

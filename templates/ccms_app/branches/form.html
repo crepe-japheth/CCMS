@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block page_header %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-800">{{ title }}</h1>
+    <p class="mt-1 text-sm text-slate-500">
+        {% if object %}Update branch details.{% else %}Register a new branch or station.{% endif %}
+    </p>
+</div>
+{% endblock %}
+
+{% block content %}
+<form method="post" class="dashboard-card max-w-2xl">
+    {% csrf_token %}
+    {% for field in form %}
+        {% include "includes/form_field.html" with field=field %}
+    {% endfor %}
+    <div class="mt-6 flex gap-3">
+        <button type="submit" class="btn-primary">{{ submit_label }}</button>
+        <a href="{% url 'ccms_app:branch_list' %}" class="btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}

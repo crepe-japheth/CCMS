@@ -1,0 +1,104 @@
+<aside id="sidebar"
+       class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-sidebar text-white transition-transform duration-300 lg:translate-x-0">
+    <!-- Brand -->
+    <div class="flex h-16 items-center gap-3 border-b border-white/10 px-5">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-brand text-lg">
+            <i class="fa-solid fa-box-open"></i>
+        </div>
+        <div>
+            <span class="text-lg font-bold tracking-wide">CCMS</span>
+            <p class="text-xs text-slate-400">Cargo Management</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 overflow-y-auto px-3 py-4">
+        <p class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Main</p>
+        <ul class="space-y-1">
+            <li>
+                <a href="{% url 'ccms_app:dashboard' %}"
+                   class="sidebar-link {% if active_nav == 'dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-gauge-high w-5 text-center"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link {% if active_nav == 'tracking' %}active{% endif %}" title="Coming in Phase 6">
+                    <i class="fa-solid fa-magnifying-glass-location w-5 text-center"></i>
+                    <span>Track Shipment</span>
+                </a>
+            </li>
+        </ul>
+
+        <p class="mb-2 mt-6 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Operations</p>
+        <ul class="space-y-1">
+            <li>
+                <a href="{% url 'ccms_app:package_list' %}"
+                   class="sidebar-link {% if active_nav == 'packages' %}active{% endif %}">
+                    <i class="fa-solid fa-box w-5 text-center"></i>
+                    <span>Packages</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'ccms_app:package_register' %}"
+                   class="sidebar-link {% if active_nav == 'register_package' %}active{% endif %}">
+                    <i class="fa-solid fa-plus-circle w-5 text-center"></i>
+                    <span>Register Package</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link" title="Coming in Phase 6">
+                    <i class="fa-solid fa-qrcode w-5 text-center"></i>
+                    <span>Scan Arrival</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link" title="Coming in Phase 6">
+                    <i class="fa-solid fa-hand-holding-box w-5 text-center"></i>
+                    <span>Confirm Delivery</span>
+                </a>
+            </li>
+        </ul>
+
+        {% if user.is_admin_manager %}
+        <p class="mb-2 mt-6 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Management</p>
+        <ul class="space-y-1">
+            <li>
+                <a href="{% url 'ccms_app:branch_list' %}"
+                   class="sidebar-link {% if active_nav == 'branches' %}active{% endif %}">
+                    <i class="fa-solid fa-building w-5 text-center"></i>
+                    <span>Branches</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'account:user_list' %}"
+                   class="sidebar-link {% if active_nav == 'users' %}active{% endif %}">
+                    <i class="fa-solid fa-users w-5 text-center"></i>
+                    <span>Users</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'ccms_app:vehicle_list' %}"
+                   class="sidebar-link {% if active_nav == 'vehicles' %}active{% endif %}">
+                    <i class="fa-solid fa-truck w-5 text-center"></i>
+                    <span>Vehicles</span>
+                </a>
+            </li>
+        </ul>
+
+        <p class="mb-2 mt-6 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Reports</p>
+        <ul class="space-y-1">
+            <li>
+                <a href="#" class="sidebar-link" title="Coming in Phase 8">
+                    <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                    <span>Reports</span>
+                </a>
+            </li>
+        </ul>
+        {% endif %}
+    </nav>
+
+    <div class="border-t border-white/10 px-5 py-4">
+        <p class="text-xs text-slate-400">CCMS Admin Dashboard</p>
+    </div>
+</aside>

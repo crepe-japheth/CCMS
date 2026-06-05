@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}{{ vehicle.plate_number }}{% endblock %}
+
+{% block page_header %}
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">{{ vehicle.plate_number }}</h1>
+        <p class="mt-1 text-sm text-slate-500">{{ vehicle.vehicle_type }} — {{ vehicle.driver_name }}</p>
+    </div>
+    <a href="{% url 'ccms_app:vehicle_edit' vehicle.pk %}" class="btn-secondary">
+        <i class="fa-solid fa-pen"></i> Edit Vehicle
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="dashboard-card">
+        <p class="text-sm text-slate-500">Driver Phone</p>
+        <p class="mt-1 font-medium">{{ vehicle.driver_phone }}</p>
+    </div>
+    <div class="dashboard-card">
+        <p class="text-sm text-slate-500">Status</p>
+        <p class="mt-1"><span class="status-badge status-registered">{{ vehicle.get_status_display }}</span></p>
+    </div>
+    <div class="dashboard-card">
+        <p class="text-sm text-slate-500">Total Shipments</p>
+        <p class="mt-1 text-2xl font-bold">{{ shipments|length }}</p>
+    </div>
+</div>
+
+<div class="dashboard-card overflow-x-auto">
+    <h2 class="mb-4 text-lg font-semibold text-slate-800">Transportation History</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Tracking #</th>
+                <th>Origin</th>
+                <th>Destination</th>
+                <th>Status</th>
+                <th>Registered</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for shipment in shipments %}
+            <tr>
+                <td class="font-mono text-xs">{{ shipment.tracking_number }}</td>
+                <td>{{ shipment.origin_branch.code }}</td>
+                <td>{{ shipment.destination_branch.code }}</td>
+                <td><span class="status-badge status-{{ shipment.status_css_class }}">{{ shipment.status_label }}</span></td>
+                <td>{{ shipment.registered_at|date:"M d, Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="py-8 text-center text-slate-400">No shipments assigned to this vehicle yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'ccms_app:vehicle_list' %}" class="text-sm font-medium text-brand hover:text-brand-dark">
+        &larr; Back to vehicles
+    </a>
+</div>
+{% endblock %}

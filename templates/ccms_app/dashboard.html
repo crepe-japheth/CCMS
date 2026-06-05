@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block page_subtitle %}
+<p class="mt-1 text-sm text-slate-500">Overview of courier and cargo operations across all branches.</p>
+{% endblock %}
+
+{% block content %}
+<!-- KPI Cards -->
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="dashboard-card">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500">Total Packages</p>
+                <p class="mt-1 text-3xl font-bold text-slate-800">{{ stats.total_packages }}</p>
+            </div>
+            <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-100 text-brand">
+                <i class="fa-solid fa-box text-lg"></i>
+            </div>
+        </div>
+        <p class="mt-3 text-xs text-slate-400">All registered shipments</p>
+    </div>
+
+    <div class="dashboard-card">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500">In Transit</p>
+                <p class="mt-1 text-3xl font-bold text-slate-800">{{ stats.in_transit }}</p>
+            </div>
+            <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
+                <i class="fa-solid fa-truck-fast text-lg"></i>
+            </div>
+        </div>
+        <p class="mt-3 text-xs text-slate-400">Currently on the road</p>
+    </div>
+
+    <div class="dashboard-card">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500">Delivered</p>
+                <p class="mt-1 text-3xl font-bold text-slate-800">{{ stats.delivered }}</p>
+            </div>
+            <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-green-100 text-green-600">
+                <i class="fa-solid fa-circle-check text-lg"></i>
+            </div>
+        </div>
+        <p class="mt-3 text-xs text-slate-400">Successfully collected</p>
+    </div>
+
+    <div class="dashboard-card">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500">Revenue</p>
+                <p class="mt-1 text-3xl font-bold text-slate-800">${{ stats.revenue }}</p>
+            </div>
+            <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
+                <i class="fa-solid fa-dollar-sign text-lg"></i>
+            </div>
+        </div>
+        <p class="mt-3 text-xs text-slate-400">Total transport fees</p>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <div class="dashboard-card">
+        <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-slate-800">Packages by Branch</h2>
+            <select class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600">
+                <option>This Month</option>
+                <option>Last Month</option>
+                <option>This Year</option>
+            </select>
+        </div>
+        <div class="h-64">
+            <canvas id="branchChart"></canvas>
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-slate-800">Shipment Status</h2>
+        </div>
+        <div class="h-64">
+            <canvas id="statusChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Row -->
+<div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
+    <!-- Recent Shipments -->
+    <div class="dashboard-card xl:col-span-2">
+        <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-slate-800">Recent Shipments</h2>
+            <a href="#" class="text-sm font-medium text-brand hover:text-brand-dark">View all</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="border-b border-slate-200 text-slate-500">
+                        <th class="pb-3 pr-4 font-medium">Tracking #</th>
+                        <th class="pb-3 pr-4 font-medium">Origin</th>
+                        <th class="pb-3 pr-4 font-medium">Destination</th>
+                        <th class="pb-3 pr-4 font-medium">Status</th>
+                        <th class="pb-3 font-medium">Fee</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for shipment in recent_shipments %}
+                    <tr class="text-slate-700">
+                        <td class="py-3 pr-4 font-mono text-xs">{{ shipment.tracking_number }}</td>
+                        <td class="py-3 pr-4">{{ shipment.origin }}</td>
+                        <td class="py-3 pr-4">{{ shipment.destination }}</td>
+                        <td class="py-3 pr-4">
+                            <span class="status-badge status-{{ shipment.status_class }}">{{ shipment.status }}</span>
+                        </td>
+                        <td class="py-3">${{ shipment.fee }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-slate-400">
+                            No shipments yet. Data will appear once packages are registered.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="dashboard-card bg-gradient-to-br from-brand to-brand-dark text-white">
+        <h2 class="mb-6 text-lg font-semibold">Today's Activity</h2>
+        <div class="space-y-6">
+            <div>
+                <div class="mb-2 flex items-center justify-between text-sm">
+                    <span class="text-blue-100">Registered</span>
+                    <span class="font-semibold">{{ stats.registered_today }} / {{ stats.daily_target }}</span>
+                </div>
+                <div class="h-2 overflow-hidden rounded-full bg-white/20">
+                    <div class="h-full rounded-full bg-white" style="width: {{ stats.registered_pct }}%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="mb-2 flex items-center justify-between text-sm">
+                    <span class="text-blue-100">Dispatched</span>
+                    <span class="font-semibold">{{ stats.dispatched_today }} / {{ stats.daily_target }}</span>
+                </div>
+                <div class="h-2 overflow-hidden rounded-full bg-white/20">
+                    <div class="h-full rounded-full bg-white" style="width: {{ stats.dispatched_pct }}%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="mb-2 flex items-center justify-between text-sm">
+                    <span class="text-blue-100">Delivered</span>
+                    <span class="font-semibold">{{ stats.delivered_today }} / {{ stats.daily_target }}</span>
+                </div>
+                <div class="h-2 overflow-hidden rounded-full bg-white/20">
+                    <div class="h-full rounded-full bg-white" style="width: {{ stats.delivered_pct }}%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6 border-t border-white/20 pt-4">
+            <p class="text-sm text-blue-100">Active Branches</p>
+            <p class="text-2xl font-bold">{{ stats.active_branches }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    const branchLabels = {{ branch_chart.labels|safe }};
+    const branchData = {{ branch_chart.data|safe }};
+    const statusLabels = {{ status_chart.labels|safe }};
+    const statusData = {{ status_chart.data|safe }};
+
+    new Chart(document.getElementById('branchChart'), {
+        type: 'bar',
+        data: {
+            labels: branchLabels,
+            datasets: [{
+                label: 'Packages Sent',
+                data: branchData,
+                backgroundColor: '#60a5fa',
+                borderRadius: 6,
+            }],
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false }, beginAtZero: true },
+                y: { grid: { display: false } },
+            },
+        },
+    });
+
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusData,
+                backgroundColor: ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444'],
+                borderWidth: 0,
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } },
+            },
+            cutout: '65%',
+        },
+    });
+</script>
+{% endblock %}

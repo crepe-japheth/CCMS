@@ -1,0 +1,79 @@
+{% extends "account/base_auth.html" %}
+
+{% block title %}Sign In{% endblock %}
+
+{% block content %}
+<div class="flex min-h-screen">
+    <!-- Left panel -->
+    <div class="hidden w-1/2 flex-col justify-between bg-sidebar p-12 text-white lg:flex">
+        <div class="flex items-center gap-3">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand text-xl">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold">CCMS</h1>
+                <p class="text-sm text-slate-400">Courier & Cargo Management</p>
+            </div>
+        </div>
+
+        <div>
+            <h2 class="text-3xl font-bold leading-tight">Manage shipments across every branch.</h2>
+            <p class="mt-4 text-slate-300">
+                Register packages, track cargo in transit, confirm arrivals, and deliver with full accountability.
+            </p>
+        </div>
+
+        <p class="text-sm text-slate-500">&copy; CCMS — Courier and Cargo Management System</p>
+    </div>
+
+    <!-- Right panel -->
+    <div class="flex flex-1 items-center justify-center p-6">
+        <div class="w-full max-w-md">
+            <div class="mb-8 text-center lg:text-left">
+                <div class="mb-6 flex items-center justify-center gap-3 lg:hidden">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-brand text-white">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <span class="text-xl font-bold text-slate-800">CCMS</span>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">Welcome back</h2>
+                <p class="mt-1 text-sm text-slate-500">Sign in to your account to continue</p>
+            </div>
+
+            {% if form.non_field_errors %}
+            <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+
+                <div>
+                    <label for="id_username" class="mb-1.5 block text-sm font-medium text-slate-700">Username</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.username.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="id_password" class="mb-1.5 block text-sm font-medium text-slate-700">Password</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.password.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <button type="submit"
+                        class="flex w-full items-center justify-center gap-2 rounded-lg bg-brand py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    Sign In
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

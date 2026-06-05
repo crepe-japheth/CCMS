@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Register Package{% endblock %}
+
+{% block page_header %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-800">Register Package</h1>
+    <p class="mt-1 text-sm text-slate-500">Enter sender, receiver, and shipment details. A tracking number and QR code will be generated automatically.</p>
+</div>
+{% endblock %}
+
+{% block content %}
+<form method="post" class="max-w-4xl space-y-6">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+    <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="dashboard-card">
+        <h2 class="mb-4 flex items-center gap-2 text-lg font-semibold text-slate-800">
+            <i class="fa-solid fa-user text-brand"></i> Sender Information
+        </h2>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {% include "includes/form_field.html" with field=form.sender_full_name %}
+            {% include "includes/form_field.html" with field=form.sender_id_number %}
+            {% include "includes/form_field.html" with field=form.sender_phone %}
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <h2 class="mb-4 flex items-center gap-2 text-lg font-semibold text-slate-800">
+            <i class="fa-solid fa-user-check text-brand"></i> Receiver Information
+        </h2>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {% include "includes/form_field.html" with field=form.receiver_full_name %}
+            {% include "includes/form_field.html" with field=form.receiver_id_number %}
+            {% include "includes/form_field.html" with field=form.receiver_phone %}
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <h2 class="mb-4 flex items-center gap-2 text-lg font-semibold text-slate-800">
+            <i class="fa-solid fa-box text-brand"></i> Shipment Information
+        </h2>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {% include "includes/form_field.html" with field=form.package_type %}
+            {% include "includes/form_field.html" with field=form.quantity %}
+            {% include "includes/form_field.html" with field=form.weight %}
+            {% include "includes/form_field.html" with field=form.transport_fee %}
+            {% include "includes/form_field.html" with field=form.origin_branch %}
+            {% include "includes/form_field.html" with field=form.destination_branch %}
+            {% include "includes/form_field.html" with field=form.assigned_vehicle %}
+            <div class="sm:col-span-2">
+                {% include "includes/form_field.html" with field=form.description %}
+            </div>
+        </div>
+    </div>
+
+    <div class="flex gap-3">
+        <button type="submit" class="btn-primary">
+            <i class="fa-solid fa-check"></i> Register Package
+        </button>
+        <a href="{% url 'ccms_app:package_list' %}" class="btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}
