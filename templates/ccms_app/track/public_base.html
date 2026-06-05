@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Track Shipment{% endblock %} | CCMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { DEFAULT: '#3b82f6', dark: '#2563eb' },
+                        sidebar: { DEFAULT: '#1e2a4a' },
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body class="min-h-screen bg-slate-100">
+    <header class="border-b border-slate-200 bg-white px-6 py-4 shadow-sm">
+        <div class="mx-auto flex max-w-3xl items-center justify-between">
+            <a href="{% url 'ccms_app:track_shipment' %}" class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-brand text-white">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <div>
+                    <span class="text-lg font-bold text-slate-800">CCMS</span>
+                    <p class="text-xs text-slate-500">Track your shipment</p>
+                </div>
+            </a>
+            <a href="{% url 'account:login' %}" class="text-sm font-medium text-brand hover:text-brand-dark">Staff login</a>
+        </div>
+    </header>
+    <main class="mx-auto max-w-3xl p-6">
+        {% block content %}{% endblock %}
+    </main>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

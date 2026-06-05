@@ -1,0 +1,7 @@
+{% extends "ccms_app/operations/scan_base.html" %}
+
+{% block scan_title %}Scan Arrival{% endblock %}
+{% block scan_heading %}Scan Package Arrival{% endblock %}
+{% block scan_subtitle %}Scan the QR code or enter the tracking number to confirm package arrival at your branch.{% endblock %}
+{% block scan_form_action %}{% url 'ccms_app:scan_arrival' %}{% endblock %}
+{% block scan_redirect_url %}{% url 'ccms_app:arrival_confirm' tracking_number='TRACKING_PLACEHOLDER' %}{% endblock %}

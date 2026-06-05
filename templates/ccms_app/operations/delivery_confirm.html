@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Delivery{% endblock %}
+
+{% block page_header %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-800">Confirm Delivery</h1>
+    <p class="mt-1 text-sm text-slate-500">Verify the receiver's identity before handing over the package.</p>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl space-y-6">
+    <div class="dashboard-card">
+        <div class="mb-4 flex items-center justify-between">
+            <p class="font-mono text-lg font-bold text-slate-800">{{ package.tracking_number }}</p>
+            <span class="status-badge status-{{ package.status_css_class }}">{{ package.status_label }}</span>
+        </div>
+        <p class="text-sm text-slate-600">
+            Receiver on file: <strong>{{ package.receiver_full_name }}</strong>
+        </p>
+    </div>
+
+    {% if not can_confirm %}
+    <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <i class="fa-solid fa-triangle-exclamation"></i> {{ error_message }}
+    </div>
+    {% else %}
+    <div class="dashboard-card">
+        <h2 class="mb-4 text-lg font-semibold text-slate-800">Receiver Verification</h2>
+        <p class="mb-4 text-sm text-slate-500">
+            Ask the receiver to present their ID. Enter the details exactly as registered.
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                {% include "includes/form_field.html" with field=field %}
+            {% endfor %}
+            <div class="mt-6 flex gap-3">
+                <button type="submit" class="btn-primary">
+                    <i class="fa-solid fa-hand-holding-box"></i> Confirm Collection
+                </button>
+                <a href="{% url 'ccms_app:confirm_delivery_lookup' %}" class="btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

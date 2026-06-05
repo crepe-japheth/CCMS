@@ -88,3 +88,32 @@ class PackageRegistrationForm(forms.ModelForm):
             self.add_error('destination_branch', 'Destination must differ from origin branch.')
 
         return cleaned
+
+
+class TrackingLookupForm(forms.Form):
+    tracking_number = forms.CharField(
+        max_length=30,
+        widget=forms.TextInput(attrs={
+            'class': INPUT_CLASS,
+            'placeholder': 'e.g. CCMS-20260605-000001',
+            'autofocus': True,
+        }),
+    )
+
+
+class DeliveryVerificationForm(forms.Form):
+    receiver_id_number = forms.CharField(
+        max_length=50,
+        label='Receiver ID / Passport',
+        widget=forms.TextInput(attrs={'class': INPUT_CLASS}),
+    )
+    receiver_full_name = forms.CharField(
+        max_length=255,
+        label='Receiver full name',
+        widget=forms.TextInput(attrs={'class': INPUT_CLASS}),
+    )
+    receiver_phone = forms.CharField(
+        max_length=20,
+        label='Receiver phone number',
+        widget=forms.TextInput(attrs={'class': INPUT_CLASS, 'placeholder': '+254...'}),
+    )

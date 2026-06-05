@@ -23,7 +23,8 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="sidebar-link {% if active_nav == 'tracking' %}active{% endif %}" title="Coming in Phase 6">
+                <a href="{% url 'ccms_app:track_shipment' %}"
+                   class="sidebar-link {% if active_nav == 'tracking' %}active{% endif %}">
                     <i class="fa-solid fa-magnifying-glass-location w-5 text-center"></i>
                     <span>Track Shipment</span>
                 </a>
@@ -47,13 +48,15 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="sidebar-link" title="Coming in Phase 6">
+                <a href="{% url 'ccms_app:scan_arrival' %}"
+                   class="sidebar-link {% if active_nav == 'scan_arrival' %}active{% endif %}">
                     <i class="fa-solid fa-qrcode w-5 text-center"></i>
                     <span>Scan Arrival</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="sidebar-link" title="Coming in Phase 6">
+                <a href="{% url 'ccms_app:confirm_delivery_lookup' %}"
+                   class="sidebar-link {% if active_nav == 'confirm_delivery' %}active{% endif %}">
                     <i class="fa-solid fa-hand-holding-box w-5 text-center"></i>
                     <span>Confirm Delivery</span>
                 </a>

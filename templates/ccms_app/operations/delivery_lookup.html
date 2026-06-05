@@ -1,0 +1,7 @@
+{% extends "ccms_app/operations/scan_base.html" %}
+
+{% block scan_title %}Confirm Delivery{% endblock %}
+{% block scan_heading %}Look Up Package for Delivery{% endblock %}
+{% block scan_subtitle %}Scan the QR code or enter the tracking number to begin receiver verification.{% endblock %}
+{% block scan_form_action %}{% url 'ccms_app:confirm_delivery_lookup' %}{% endblock %}
+{% block scan_redirect_url %}{% url 'ccms_app:delivery_confirm' tracking_number='TRACKING_PLACEHOLDER' %}{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "ccms_app/track/public_base.html" %}
+{% load static %}
+
+{% block title %}Tracking — {{ tracking_number }}{% endblock %}
+
+{% block content %}
+{% if package %}
+<div class="dashboard-card mb-6">
+    <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <p class="font-mono text-lg font-bold text-slate-800">{{ package.tracking_number }}</p>
+        <span class="status-badge status-{{ package.status_css_class }}">{{ package.status_label }}</span>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+        <div class="rounded-lg bg-slate-50 p-4">
+            <p class="text-xs uppercase tracking-wide text-slate-500">Origin</p>
+            <p class="mt-1 font-medium">{{ package.origin_branch.name }}</p>
+            <p class="text-slate-500">{{ package.origin_branch.location }}</p>
+        </div>
+        <div class="rounded-lg bg-slate-50 p-4">
+            <p class="text-xs uppercase tracking-wide text-slate-500">Destination</p>
+            <p class="mt-1 font-medium">{{ package.destination_branch.name }}</p>
+            <p class="text-slate-500">{{ package.destination_branch.location }}</p>
+        </div>
+    </div>
+
+    <dl class="mt-6 grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
+        <div>
+            <dt class="text-slate-500">Registered</dt>
+            <dd class="font-medium">{{ package.registered_at|date:"M d, Y H:i" }}</dd>
+        </div>
+        <div>
+            <dt class="text-slate-500">Arrived</dt>
+            <dd class="font-medium">{{ package.arrived_at|date:"M d, Y H:i"|default:"—" }}</dd>
+        </div>
+        <div>
+            <dt class="text-slate-500">Delivered</dt>
+            <dd class="font-medium">{{ package.delivered_at|date:"M d, Y H:i"|default:"—" }}</dd>
+        </div>
+    </dl>
+</div>
+
+<div class="dashboard-card">
+    <h2 class="mb-4 text-lg font-semibold text-slate-800">Shipment Timeline</h2>
+    <ol class="space-y-4">
+        {% for entry in history %}
+        <li class="border-l-2 border-brand pl-4">
+            <p class="text-sm font-medium text-slate-800">{{ entry.get_status_display }}</p>
+            <p class="text-xs text-slate-500">{{ entry.changed_at|date:"M d, Y H:i" }}</p>
+        </li>
+        {% empty %}
+        <li class="text-sm text-slate-400">No updates yet.</li>
+        {% endfor %}
+    </ol>
+</div>
+{% else %}
+<div class="dashboard-card text-center">
+    <i class="fa-solid fa-box-open mb-4 text-4xl text-slate-300"></i>
+    <h1 class="text-xl font-bold text-slate-800">Shipment not found</h1>
+    <p class="mt-2 text-sm text-slate-500">
+        No package matches <span class="font-mono">{{ tracking_number }}</span>. Check the number and try again.
+    </p>
+</div>
+{% endif %}
+
+<div class="mt-6 text-center">
+    <a href="{% url 'ccms_app:track_shipment' %}" class="text-sm font-medium text-brand hover:text-brand-dark">
+        &larr; Track another shipment
+    </a>
+</div>
+{% endblock %}

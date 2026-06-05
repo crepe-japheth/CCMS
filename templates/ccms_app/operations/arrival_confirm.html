@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Arrival{% endblock %}
+
+{% block page_header %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-800">Confirm Arrival</h1>
+    <p class="mt-1 text-sm text-slate-500">Review shipment details before confirming receipt at destination.</p>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl">
+    <div class="dashboard-card mb-6">
+        <div class="mb-4 flex items-center justify-between">
+            <p class="font-mono text-lg font-bold text-slate-800">{{ package.tracking_number }}</p>
+            <span class="status-badge status-{{ package.status_css_class }}">{{ package.status_label }}</span>
+        </div>
+
+        <dl class="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+            <div>
+                <dt class="text-slate-500">Origin</dt>
+                <dd class="font-medium">{{ package.origin_branch.name }} ({{ package.origin_branch.code }})</dd>
+            </div>
+            <div>
+                <dt class="text-slate-500">Destination</dt>
+                <dd class="font-medium">{{ package.destination_branch.name }} ({{ package.destination_branch.code }})</dd>
+            </div>
+            <div>
+                <dt class="text-slate-500">Sender</dt>
+                <dd>{{ package.sender_full_name }} · {{ package.sender_phone }}</dd>
+            </div>
+            <div>
+                <dt class="text-slate-500">Receiver</dt>
+                <dd>{{ package.receiver_full_name }} · {{ package.receiver_phone }}</dd>
+            </div>
+            <div>
+                <dt class="text-slate-500">Type / Weight</dt>
+                <dd>{{ package.get_package_type_display }} · {{ package.weight }} kg</dd>
+            </div>
+            <div>
+                <dt class="text-slate-500">Registered</dt>
+                <dd>{{ package.registered_at|date:"M d, Y H:i" }}</dd>
+            </div>
+        </dl>
+    </div>
+
+    {% if not can_confirm %}
+    <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <i class="fa-solid fa-triangle-exclamation"></i> {{ error_message }}
+    </div>
+    {% endif %}
+
+    <div class="flex gap-3">
+        {% if can_confirm %}
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn-primary">
+                <i class="fa-solid fa-check"></i> Confirm Arrival
+            </button>
+        </form>
+        {% endif %}
+        <a href="{% url 'ccms_app:scan_arrival' %}" class="btn-secondary">Scan another</a>
+    </div>
+</div>
+{% endblock %}
