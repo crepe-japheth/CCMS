@@ -3,3 +3,6 @@ qrcode[pil]
 Pillow
 openpyxl
 reportlab
+psycopg2-binary
+django-tenants
+dotenv
