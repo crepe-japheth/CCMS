@@ -5,13 +5,15 @@ from django.shortcuts import redirect, render
 from account.models import AuditLog
 from account.utils import log_audit
 
-from .forms import DeliveryVerificationForm, TrackingLookupForm
+from .forms import DeliveryVerificationForm, PackageStatusUpdateForm, TrackingLookupForm
 from .services import (
+    apply_manual_status_change,
     can_confirm_arrival,
     can_confirm_delivery,
     confirm_arrival,
     confirm_delivery,
     get_package_by_tracking,
+    packages_for_user,
     verify_receiver,
 )
 
@@ -125,6 +127,52 @@ def delivery_confirm(request, tracking_number):
         'form': form,
         'can_confirm': allowed,
         'error_message': error,
+    })
+
+
+@login_required
+def update_status_lookup(request):
+    form = TrackingLookupForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        tracking = form.cleaned_data['tracking_number']
+        return redirect('ccms_app:update_status', tracking_number=tracking)
+
+    return render(request, 'ccms_app/operations/update_status_lookup.html', {
+        'active_nav': 'update_status',
+        'form': form,
+    })
+
+
+@login_required
+def update_status(request, tracking_number):
+    package = packages_for_user(request.user).filter(
+        tracking_number__iexact=tracking_number.strip()
+    ).first()
+
+    if not package:
+        messages.error(request, 'Package not found or you do not have access.')
+        return redirect('ccms_app:update_status_lookup')
+
+    form = PackageStatusUpdateForm(request.POST or None, package=package)
+    if request.method == 'POST' and form.is_valid():
+        new_status = form.cleaned_data['status']
+        notes = form.cleaned_data['notes']
+        package, changed = apply_manual_status_change(package, new_status, request.user, notes=notes)
+        if changed:
+            log_audit(
+                request.user,
+                AuditLog.Action.PACKAGE_STATUS_CHANGED,
+                description=f'Status of {package.tracking_number} changed to {package.status_label}.',
+                request=request,
+            )
+            messages.success(request, f'Status updated to {package.status_label}.')
+            return redirect('ccms_app:package_detail', pk=package.pk)
+        messages.info(request, 'Status is already set to that value.')
+
+    return render(request, 'ccms_app/operations/update_status.html', {
+        'active_nav': 'update_status',
+        'package': package,
+        'form': form,
     })
 
 

@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Branch, Package, Vehicle
+from .models import Branch, Package, PackageStatus, Vehicle
 
 
 INPUT_CLASS = 'form-input'
@@ -99,6 +99,24 @@ class TrackingLookupForm(forms.Form):
             'autofocus': True,
         }),
     )
+
+
+class PackageStatusUpdateForm(forms.Form):
+    status = forms.ChoiceField(
+        choices=PackageStatus.choices,
+        widget=forms.Select(attrs={'class': SELECT_CLASS}),
+        label='New status',
+    )
+    notes = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'class': TEXTAREA_CLASS, 'rows': 2, 'placeholder': 'Optional reason for this change'}),
+        label='Notes',
+    )
+
+    def __init__(self, *args, package=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if package:
+            self.fields['status'].initial = package.status
 
 
 class DeliveryVerificationForm(forms.Form):

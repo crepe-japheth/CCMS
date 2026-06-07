@@ -1,0 +1,7 @@
+{% extends "ccms_app/operations/scan_base.html" %}
+
+{% block scan_title %}Update Status{% endblock %}
+{% block scan_heading %}Update Package Status{% endblock %}
+{% block scan_subtitle %}Scan or enter a tracking number to manually change the shipment status.{% endblock %}
+{% block scan_form_action %}{% url 'ccms_app:update_status_lookup' %}{% endblock %}
+{% block scan_redirect_url %}{% url 'ccms_app:update_status' tracking_number='TRACKING_PLACEHOLDER' %}{% endblock %}

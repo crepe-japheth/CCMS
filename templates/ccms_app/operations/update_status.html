@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Update Status{% endblock %}
+
+{% block page_header %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-800">Update Package Status</h1>
+    <p class="mt-1 font-mono text-sm text-slate-600">{{ package.tracking_number }}</p>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-xl space-y-6">
+    <div class="dashboard-card">
+        <div class="mb-4 flex items-center justify-between">
+            <p class="text-sm text-slate-500">Current status</p>
+            <span class="status-badge status-{{ package.status_css_class }}">{{ package.status_label }}</span>
+        </div>
+        <p class="text-sm text-slate-600">
+            {{ package.origin_branch.code }} &rarr; {{ package.destination_branch.code }}
+        </p>
+    </div>
+
+    <div class="dashboard-card">
+        <h2 class="mb-4 text-lg font-semibold text-slate-800">Set new status</h2>
+        <p class="mb-4 text-sm text-slate-500">
+            Choose any status below. Use this when the guided scan flows do not match the current situation.
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                {% include "includes/form_field.html" with field=field %}
+            {% endfor %}
+            <div class="mt-6 flex gap-3">
+                <button type="submit" class="btn-primary">
+                    <i class="fa-solid fa-arrows-rotate"></i> Update Status
+                </button>
+                <a href="{% url 'ccms_app:package_detail' package.pk %}" class="btn-secondary">View package</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

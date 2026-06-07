@@ -148,3 +148,46 @@ def confirm_delivery(package, user, receiver_id_number):
     package.delivery_receiver_id_number = receiver_id_number
     package.save(update_fields=['delivered_by', 'delivered_at', 'delivery_receiver_id_number', 'updated_at'])
     return package
+
+
+def apply_manual_status_change(package, new_status, user, notes=''):
+    """Manually set any package status (staff override). Updates related timestamps."""
+    if package.status == new_status:
+        return package, False
+
+    now = timezone.now()
+    receiving_branch = (
+        user.branch if user.is_branch_officer and user.branch_id
+        else package.destination_branch
+    )
+
+    record_status_change(
+        package,
+        new_status,
+        user,
+        notes=notes or f'Status manually updated to {PackageStatus(new_status).label}.',
+    )
+
+    update_fields = ['status', 'updated_at']
+
+    if new_status == PackageStatus.ARRIVED:
+        if not package.arrived_at:
+            package.arrived_at = now
+            update_fields.append('arrived_at')
+        if not package.received_by_id:
+            package.received_by = user
+            update_fields.append('received_by')
+        if not package.received_at_branch_id:
+            package.received_at_branch = receiving_branch
+            update_fields.append('received_at_branch')
+
+    elif new_status == PackageStatus.DELIVERED:
+        if not package.delivered_at:
+            package.delivered_at = now
+            update_fields.append('delivered_at')
+        if not package.delivered_by_id:
+            package.delivered_by = user
+            update_fields.append('delivered_by')
+
+    package.save(update_fields=update_fields)
+    return package, True

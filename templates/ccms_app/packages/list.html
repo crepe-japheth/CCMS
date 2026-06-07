@@ -70,6 +70,9 @@
                         <a href="{% url 'ccms_app:package_detail' package.pk %}" class="btn-icon" title="View">
                             <i class="fa-solid fa-eye"></i>
                         </a>
+                        <a href="{% url 'ccms_app:update_status' package.tracking_number %}" class="btn-icon" title="Update status">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                        </a>
                         <a href="{% url 'ccms_app:package_qr' package.pk %}" class="btn-icon" title="Print QR">
                             <i class="fa-solid fa-qrcode"></i>
                         </a>

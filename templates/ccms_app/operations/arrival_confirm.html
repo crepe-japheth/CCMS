@@ -47,7 +47,12 @@
 
     {% if not can_confirm %}
     <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-        <i class="fa-solid fa-triangle-exclamation"></i> {{ error_message }}
+        <p><i class="fa-solid fa-triangle-exclamation"></i> {{ error_message }}</p>
+        <p class="mt-2">
+            <a href="{% url 'ccms_app:update_status' package.tracking_number %}" class="font-medium text-brand hover:underline">
+                Update status manually instead &rarr;
+            </a>
+        </p>
     </div>
     {% endif %}
 

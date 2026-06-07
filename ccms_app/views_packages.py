@@ -7,10 +7,10 @@ from django.shortcuts import redirect, render
 from account.models import AuditLog
 from account.utils import log_audit
 
-from .forms import PackageRegistrationForm
+from .forms import PackageRegistrationForm, PackageStatusUpdateForm
 from .models import PackageStatus
 from .qr_utils import generate_qr_png
-from .services import create_package_with_status, packages_for_user
+from .services import apply_manual_status_change, create_package_with_status, packages_for_user
 
 
 @login_required
@@ -79,11 +79,29 @@ def package_detail(request, pk):
     if not package:
         raise Http404('Package not found.')
 
+    status_form = PackageStatusUpdateForm(request.POST or None, package=package)
+    if request.method == 'POST' and 'update_status' in request.POST and status_form.is_valid():
+        new_status = status_form.cleaned_data['status']
+        notes = status_form.cleaned_data['notes']
+        package, changed = apply_manual_status_change(package, new_status, request.user, notes=notes)
+        if changed:
+            log_audit(
+                request.user,
+                AuditLog.Action.PACKAGE_STATUS_CHANGED,
+                description=f'Status of {package.tracking_number} changed to {package.status_label}.',
+                request=request,
+            )
+            messages.success(request, f'Status updated to {package.status_label}.')
+        else:
+            messages.info(request, 'Status is already set to that value.')
+        return redirect('ccms_app:package_detail', pk=package.pk)
+
     history = package.status_history.select_related('changed_by').all()
     return render(request, 'ccms_app/packages/detail.html', {
         'active_nav': 'packages',
         'package': package,
         'history': history,
+        'status_form': status_form,
     })
 
 

@@ -65,19 +65,36 @@
         {% endif %}
     </div>
 
-    <div class="dashboard-card">
-        <h3 class="mb-4 text-lg font-semibold text-slate-800">Status History</h3>
-        <ol class="space-y-4">
-            {% for entry in history %}
-            <li class="border-l-2 border-brand pl-4">
-                <p class="text-sm font-medium text-slate-800">{{ entry.get_status_display }}</p>
-                <p class="text-xs text-slate-500">{{ entry.changed_at|date:"M d, Y H:i" }}</p>
-                {% if entry.changed_by %}<p class="text-xs text-slate-400">by {{ entry.changed_by.full_name }}</p>{% endif %}
-            </li>
-            {% empty %}
-            <li class="text-sm text-slate-400">No history yet.</li>
-            {% endfor %}
-        </ol>
+    <div class="space-y-6">
+        <div class="dashboard-card">
+            <h3 class="mb-4 text-lg font-semibold text-slate-800">Update Status</h3>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="update_status" value="1">
+                {% for field in status_form %}
+                    {% include "includes/form_field.html" with field=field %}
+                {% endfor %}
+                <button type="submit" class="btn-primary mt-2 w-full justify-center">
+                    <i class="fa-solid fa-arrows-rotate"></i> Update Status
+                </button>
+            </form>
+        </div>
+
+        <div class="dashboard-card">
+            <h3 class="mb-4 text-lg font-semibold text-slate-800">Status History</h3>
+            <ol class="space-y-4">
+                {% for entry in history %}
+                <li class="border-l-2 border-brand pl-4">
+                    <p class="text-sm font-medium text-slate-800">{{ entry.get_status_display }}</p>
+                    <p class="text-xs text-slate-500">{{ entry.changed_at|date:"M d, Y H:i" }}</p>
+                    {% if entry.changed_by %}<p class="text-xs text-slate-400">by {{ entry.changed_by.full_name }}</p>{% endif %}
+                    {% if entry.notes %}<p class="text-xs text-slate-400">{{ entry.notes }}</p>{% endif %}
+                </li>
+                {% empty %}
+                <li class="text-sm text-slate-400">No history yet.</li>
+                {% endfor %}
+            </ol>
+        </div>
     </div>
 </div>
 {% endblock %}

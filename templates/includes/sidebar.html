@@ -61,6 +61,13 @@
                     <span>Confirm Delivery</span>
                 </a>
             </li>
+            <li>
+                <a href="{% url 'ccms_app:update_status_lookup' %}"
+                   class="sidebar-link {% if active_nav == 'update_status' %}active{% endif %}">
+                    <i class="fa-solid fa-arrows-rotate w-5 text-center"></i>
+                    <span>Update Status</span>
+                </a>
+            </li>
         </ul>
 
         {% if user.is_admin_manager %}
