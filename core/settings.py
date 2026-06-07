@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-m6%^af*7)bfbh7pf5gz!0158@8@gbi%#ywm1_zvfghfqj)6bxc
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.localhost', '.railway.app']
-CSRF_TRUSTED_ORIGINS = ["https://ccms.up.railway.app"]
+CSRF_TRUSTED_ORIGINS = ["https://ccms-prod.up.railway.app"]
 
 
 # Application definition
