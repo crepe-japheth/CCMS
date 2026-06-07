@@ -28,7 +28,8 @@ SECRET_KEY = 'django-insecure-m6%^af*7)bfbh7pf5gz!0158@8@gbi%#ywm1_zvfghfqj)6bxc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.localhost']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.localhost', '.railway.app']
+CSRF_TRUSTED_ORIGINS = ["https://ccms.up.railway.app"]
 
 
 # Application definition
@@ -69,6 +70,7 @@ LOGOUT_REDIRECT_URL = 'account:login'
 MIDDLEWARE = [
     'django_tenants.middleware.main.TenantMainMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -155,6 +157,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
+STATICSTORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']

@@ -6,3 +6,5 @@ reportlab
 psycopg2-binary
 django-tenants
 dotenv
+whitenoise
+gunicorn
