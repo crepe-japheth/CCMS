@@ -28,28 +28,28 @@ SECRET_KEY = 'django-insecure-m6%^af*7)bfbh7pf5gz!0158@8@gbi%#ywm1_zvfghfqj)6bxc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.localhost']
 
 
 # Application definition
 
+# Public schema only: tenant registry (Client/Domain) + contenttypes for shared models.
+# auth/admin/sessions MUST stay in TENANT_APPS because AUTH_USER_MODEL lives in account.
 SHARED_APPS = [
     'django_tenants',
     'main_app',
-    'django.contrib.admin',
-    'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    
 ]
 
-TENANT_APPS =[
-    # local apps
-    'account.apps.AccountConfig',
-    'ccms_app.apps.CcmsAppConfig',
+TENANT_APPS = [
+    'django.contrib.contenttypes',
+    'django.contrib.auth',
+    'django.contrib.admin',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'account',
+    'ccms_app',
 ]
 
 INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]

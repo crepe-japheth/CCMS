@@ -18,7 +18,7 @@ class User(AbstractUser):
     role = models.CharField(
         max_length=20,
         choices=UserRole.choices,
-        default=UserRole.BRANCH_OFFICER,
+        default=UserRole.ADMIN_MANAGER,
     )
     status = models.CharField(
         max_length=20,
