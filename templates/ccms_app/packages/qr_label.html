@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Label — {{ package.tracking_number }}</title>
+    {% include "includes/tenant_branding_head.html" %}
     <link rel="stylesheet" href="{% static 'css/print.css' %}">
 </head>
 <body>
@@ -16,8 +17,8 @@
     <div class="label-sheet">
         <div class="label">
             <div class="label-header">
-                <span class="brand">CCMS</span>
-                <span class="subtitle">Courier & Cargo Management</span>
+                <span class="brand">{{ tenant_branding.name }}</span>
+                <span class="subtitle">{{ tenant_branding.tagline }}</span>
             </div>
 
             <div class="qr-wrap">

@@ -1,0 +1,30 @@
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    sidebar: {
+                        DEFAULT: '{{ tenant_branding.sidebar_color }}',
+                        hover: '{{ tenant_branding.sidebar_hover }}',
+                        active: '{{ tenant_branding.sidebar_active }}',
+                    },
+                    brand: {
+                        DEFAULT: '{{ tenant_branding.primary_color }}',
+                        light: '{{ tenant_branding.primary_light }}',
+                        dark: '{{ tenant_branding.primary_dark }}',
+                    },
+                },
+            },
+        },
+    }
+</script>
+<style>
+    :root {
+        --brand-color: {{ tenant_branding.primary_color }};
+        --brand-dark: {{ tenant_branding.primary_dark }};
+        --brand-light: {{ tenant_branding.primary_light }};
+        --sidebar-color: {{ tenant_branding.sidebar_color }};
+        --sidebar-hover: {{ tenant_branding.sidebar_hover }};
+        --sidebar-active: {{ tenant_branding.sidebar_active }};
+    }
+</style>

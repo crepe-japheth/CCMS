@@ -32,8 +32,8 @@ body {
 }
 
 .btn-primary {
-    background: #3b82f6;
-    border-color: #3b82f6;
+    background: var(--brand-color, #3b82f6);
+    border-color: var(--brand-color, #3b82f6);
     color: #fff;
 }
 
@@ -60,7 +60,7 @@ body {
     display: block;
     font-size: 1.25rem;
     font-weight: 800;
-    color: #1e2a4a;
+    color: var(--sidebar-color, #1e2a4a);
     letter-spacing: 0.05em;
 }
 
@@ -79,7 +79,7 @@ body {
     font-family: ui-monospace, monospace;
     font-size: 1rem;
     font-weight: 700;
-    color: #1e2a4a;
+    color: var(--sidebar-color, #1e2a4a);
     margin-bottom: 1rem;
 }
 
@@ -98,7 +98,7 @@ body {
 
 .route .arrow {
     font-size: 1.25rem;
-    color: #3b82f6;
+    color: var(--brand-color, #3b82f6);
 }
 
 .label-tag {

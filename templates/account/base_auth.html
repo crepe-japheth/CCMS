@@ -4,20 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Sign In{% endblock %} | CCMS</title>
+    <title>{% block title %}Sign In{% endblock %} | {{ tenant_branding.name }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        sidebar: { DEFAULT: '#1e2a4a' },
-                        brand: { DEFAULT: '#3b82f6', dark: '#2563eb' },
-                    },
-                },
-            },
-        }
-    </script>
+    {% include "includes/tenant_branding_head.html" %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/auth.css' %}">
 </head>

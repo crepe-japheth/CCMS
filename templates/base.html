@@ -4,28 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}CCMS{% endblock %} | Courier & Cargo Management</title>
+    <title>{% block title %}{{ tenant_branding.name }}{% endblock %} | {{ tenant_branding.tagline }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        sidebar: {
-                            DEFAULT: '#1e2a4a',
-                            hover: '#253358',
-                            active: '#2d3f6e',
-                        },
-                        brand: {
-                            DEFAULT: '#3b82f6',
-                            light: '#60a5fa',
-                            dark: '#2563eb',
-                        },
-                    },
-                },
-            },
-        }
-    </script>
+    {% include "includes/tenant_branding_head.html" %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
     {% block extra_css %}{% endblock %}
@@ -51,7 +32,7 @@
             </main>
 
             <footer class="border-t border-slate-200 bg-white px-6 py-3 text-center text-sm text-slate-500">
-                CCMS &mdash; Courier and Cargo Management System
+                {{ tenant_branding.name }} &mdash; {{ tenant_branding.tagline }}
             </footer>
         </div>
     </div>

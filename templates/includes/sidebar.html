@@ -2,12 +2,10 @@
        class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-sidebar text-white transition-transform duration-300 lg:translate-x-0">
     <!-- Brand -->
     <div class="flex h-16 items-center gap-3 border-b border-white/10 px-5">
-        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-brand text-lg">
-            <i class="fa-solid fa-box-open"></i>
-        </div>
+        {% include "includes/tenant_logo.html" %}
         <div>
-            <span class="text-lg font-bold tracking-wide">CCMS</span>
-            <p class="text-xs text-slate-400">Cargo Management</p>
+            <span class="text-lg font-bold tracking-wide">{{ tenant_branding.name }}</span>
+            <p class="text-xs text-slate-400">{{ tenant_branding.tagline }}</p>
         </div>
     </div>
 
@@ -105,11 +103,18 @@
                     <span>Reports</span>
                 </a>
             </li>
+            <li>
+                <a href="{% url 'main_app:branding_settings' %}"
+                   class="sidebar-link {% if active_nav == 'branding' %}active{% endif %}">
+                    <i class="fa-solid fa-palette w-5 text-center"></i>
+                    <span>Branding</span>
+                </a>
+            </li>
         </ul>
         {% endif %}
     </nav>
 
     <div class="border-t border-white/10 px-5 py-4">
-        <p class="text-xs text-slate-400">CCMS Admin Dashboard</p>
+        <p class="text-xs text-slate-400">{{ tenant_branding.name }}</p>
     </div>
 </aside>

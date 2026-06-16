@@ -1,0 +1,8 @@
+{% if tenant_branding.logo_url %}
+<img src="{{ tenant_branding.logo_url }}" alt="{{ tenant_branding.name }}"
+     class="{{ size_class|default:'h-10 w-10' }} rounded-lg object-contain bg-white/10 p-0.5">
+{% else %}
+<div class="flex {{ size_class|default:'h-10 w-10' }} items-center justify-center rounded-lg bg-brand text-lg">
+    <i class="fa-solid fa-box-open"></i>
+</div>
+{% endif %}
