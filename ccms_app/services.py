@@ -1,6 +1,9 @@
+from django.conf import settings
 from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
+
+from notification.tasks import send_package_event_sms
 
 from .models import Package, PackageStatus, PackageStatusHistory
 
@@ -58,11 +61,25 @@ def record_status_change(package, new_status, user=None, notes=''):
     return package
 
 
+def _queue_package_notification(package, event):
+    if not package or event not in ('registered', 'arrived', 'delivered'):
+        return
+
+    send_package_event_sms.delay(
+        event,
+        package.sender_phone,
+        package.receiver_phone,
+        package.tracking_number,
+        settings.PACKAGE_TRACKING_URL,
+    )
+
+
 def create_package_with_status(package, user=None):
     """Save a new package; initial status history is created via signal."""
     if user and not package.registered_by_id:
         package.registered_by = user
     package.save()
+    _queue_package_notification(package, 'registered')
     return package
 
 
@@ -110,6 +127,8 @@ def confirm_arrival(package, user):
     package.received_at_branch = receiving_branch
     package.arrived_at = now
     package.save(update_fields=['received_by', 'received_at_branch', 'arrived_at', 'updated_at'])
+
+    _queue_package_notification(package, 'arrived')
     return package
 
 
@@ -147,6 +166,8 @@ def confirm_delivery(package, user, receiver_id_number):
     package.delivered_at = now
     package.delivery_receiver_id_number = receiver_id_number
     package.save(update_fields=['delivered_by', 'delivered_at', 'delivery_receiver_id_number', 'updated_at'])
+
+    _queue_package_notification(package, 'delivered')
     return package
 
 
@@ -190,4 +211,6 @@ def apply_manual_status_change(package, new_status, user, notes=''):
             update_fields.append('delivered_by')
 
     package.save(update_fields=update_fields)
+    if new_status in (PackageStatus.ARRIVED, PackageStatus.DELIVERED):
+        _queue_package_notification(package, new_status)
     return package, True

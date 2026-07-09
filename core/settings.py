@@ -51,6 +51,7 @@ TENANT_APPS = [
     'django.contrib.messages',
     'account',
     'ccms_app',
+    'notification',
 ]
 
 INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
@@ -124,6 +125,20 @@ DATABASES = {
 DATABASE_ROUTERS = (
     'django_tenants.routers.TenantSyncRouter',
 )
+
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://redis:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', CELERY_BROKER_URL)
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+
+SMS_GATEWAY_URL = os.getenv(
+    'SMS_GATEWAY_URL',
+    'https://europe-west1-sms-gateway-api-simpapp.cloudfunctions.net/api_v2_sms_send',
+)
+SMS_GATEWAY_API_KEY = os.getenv('SMS_GATEWAY_API_KEY', '')
+PACKAGE_TRACKING_URL = os.getenv('PACKAGE_TRACKING_URL', 'http://localhost:8000')
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
