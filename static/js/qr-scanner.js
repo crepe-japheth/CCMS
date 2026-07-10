@@ -19,8 +19,14 @@ function initQrScanner(redirectUrlTemplate) {
             if (!cameras || cameras.length === 0) {
                 readerElement.innerHTML = '<p class="p-4 text-sm text-slate-500">No camera found. Use manual entry instead.</p>';
                 return;
-            }
-            scanner.start(cameras[0].id, config, onScanSuccess, () => {});
+            }//
+
+            const rearCamera = cameras.find((camera) => {
+                const label = (camera.label || '').toLowerCase();
+                return /rear|back|environment|world|wide/.test(label);
+            }) || cameras[cameras.length - 1] || cameras[0];
+
+            scanner.start(rearCamera.id, config, onScanSuccess, () => {});//
         })
         .catch(() => {
             readerElement.innerHTML = '<p class="p-4 text-sm text-slate-500">Camera unavailable. Use manual entry instead.</p>';
